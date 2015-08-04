@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Tutorial: Hello CA Dstore!</title>
+</head>
+<body>
+    <h1 id="greeting">CATree</h1>
+    <!-- load Dojo -->
+    <script>
+      dojoConfig= {
+          has: {
+              "dojo-firebug": true
+          },                    
+          async: true
+      };
+    </script>
+    <script src="bower_components/dojo/dojo.js"></script>
+
+    <script>
+    require([
+                "dojo/_base/declare", "dojo/dom", "dojo/json", "dstore/Memory", "dstore/Tree",
+                "dijit/Tree", "dojo/text!./dati_2.json", "dstore/legacy/DstoreAdapter", "dojo/domReady!"
+            ], function(declare, dom, json, Memory, dtree, tree, data, legacyStore){
+
+                var TestStore = declare([ Memory, dtree ]);
+
+                var store = new TestStore({
+                
+                    data: json.parse(data),
+
+                    idProperty : 'id',
+                                        
+                    getChildren: function(object){
+                        //debugger;
+                        return this.filter({parent: object.id});
+                    },
+                     
+                    mayHaveChildren: function(object){
+                        return object.has_child;
+                    },
+                    
+                    getRoot: function(onItem, onError){
+                        // there should be only on a single object in (the root of) this collection,
+                        // so we just return that
+                        debugger;
+
+                        return this.filter({parent: null});
+                    },
+                    
+                    getLabel: function(object){
+                        return object.label;
+                    }
+                });
+
+                // Create the Tree.
+                var tree = new tree({
+                    model: store
+                }, "divTree");
+                
+                tree.startup();
+            });
+ 
+    </script>
+
+    <div id="divTree"></div>
+
+</body>
+</html>
